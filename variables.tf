@@ -1,19 +1,30 @@
+variable "location" {
+  type        = string
+  description = "Azure region where the resource should be deployed."
+  nullable    = false
+}
+
 variable "name" {
   type        = string
   description = "The name of the this resource."
+}
 
-  validation {
-    condition     = can(regex("TODO", var.name))
-    error_message = "The name must be TODO." # TODO remove the example below once complete:
-    #condition     = can(regex("^[a-z0-9]{5,50}$", var.name))
-    #error_message = "The name must be between 5 and 50 characters long and can only contain lowercase letters and numbers."
-  }
+variable "resource_group_id" {
+  type        = string
+  description = "The resource group ID where the resources will be deployed."
 }
 
 # This is required for most resource modules
 variable "resource_group_name" {
   type        = string
   description = "The resource group where the resources will be deployed."
+}
+
+# #Access control block
+# tflint-ignore: terraform_typed_variables
+variable "access_control" {
+  default     = {}
+  description = "Optional. The access control configuration for the workflow."
 }
 
 # required AVM interfaces
@@ -94,10 +105,23 @@ If it is set to false, then no telemetry will be collected.
 DESCRIPTION
 }
 
-variable "location" {
+# Other parameters
+# tflint-ignore: terraform_typed_variables
+variable "endpoints_configuration" {
+  default     = {}
+  description = "Optional. The endpoints configuration:  Access endpoint and outgoing IP addresses for the connector and workflow."
+}
+
+variable "integration_account_id" {
   type        = string
-  nullable    = false
-  description = "Azure region where the resource should be deployed."
+  default     = ""
+  description = "Optional. The Integration Account ID."
+}
+
+variable "integration_service_environment_id" {
+  type        = string
+  default     = ""
+  description = "Optional. The integration service environment id."
 }
 
 variable "lock" {
@@ -117,6 +141,23 @@ DESCRIPTION
     condition     = var.lock != null ? contains(["CanNotDelete", "ReadOnly"], var.lock.kind) : true
     error_message = "The lock level must be one of: 'None', 'CanNotDelete', or 'ReadOnly'."
   }
+}
+
+# tflint-ignore: terraform_typed_variables
+variable "logic_app_definition" {
+  default = {
+    "$schema"      = "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#"
+    actions        = {}
+    contentVersion = "1.0.0.0"
+    outputs        = {}
+    parameters     = {}
+    triggers       = {}
+  }
+  description = <<DESCRIPTION
+  The definition of the Logic App workflow.  This parameter's structure is defined by
+  the Logic App workflow schema, and hence a type constraint is not defined here.  The Default value
+  contains the necessary minimum contents - to define a blank Logic App workflow.
+DESCRIPTION
 }
 
 # tflint-ignore: terraform_unused_declarations
@@ -195,8 +236,8 @@ DESCRIPTION
 variable "private_endpoints_manage_dns_zone_group" {
   type        = bool
   default     = true
-  nullable    = false
   description = "Whether to manage private DNS zone groups with this module. If set to false, you must manage private DNS zone groups externally, e.g. using Azure Policy."
+  nullable    = false
 }
 
 variable "role_assignments" {
@@ -225,6 +266,16 @@ DESCRIPTION
   nullable    = false
 }
 
+variable "state" {
+  type        = string
+  default     = "Enabled"
+  description = "Optional. The state. - NotSpecified, Completed, Enabled, Disabled, Deleted, Suspended."
+
+  validation {
+    condition     = contains(["NotSpecified", "Completed", "Enabled", "Disabled", "Deleted", "Suspended"], var.state)
+    error_message = "The state. - NotSpecified, Completed, Enabled, Disabled, Deleted, Suspended."
+  }
+}
 
 # tflint-ignore: terraform_unused_declarations
 variable "tags" {

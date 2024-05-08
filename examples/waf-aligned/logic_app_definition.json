@@ -1,0 +1,98 @@
+{
+    "properties" : {
+        "definition": {
+            "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+            "actions": {
+                "Condition": {
+                    "actions": {
+                        "HTTP": {
+                            "inputs": {
+                                "method": "GET",
+                                "uri": "https://www.microsoft.com"
+                            },
+                            "runAfter": {
+                                "Terminate": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Http"
+                        },
+                        "Terminate": {
+                            "inputs": {
+                                "runStatus": "Succeeded"
+                            },
+                            "runAfter": {},
+                            "type": "Terminate"
+                        }
+                    },
+                    "expression": {
+                        "and": [
+                            {
+                                "equals": [
+                                    "@variables('hi')",
+                                    6
+                                ]
+                            }
+                        ]
+                    },
+                    "runAfter": {
+                        "Increment_variable": [
+                            "Succeeded"
+                        ]
+                    },
+                    "type": "If"
+                },
+                "Increment_variable": {
+                    "inputs": {
+                        "name": "hi",
+                        "value": 1
+                    },
+                    "runAfter": {
+                        "Initialize_variable": [
+                            "Succeeded"
+                        ]
+                    },
+                    "type": "IncrementVariable"
+                },
+                "Initialize_variable": {
+                    "inputs": {
+                        "variables": [
+                            {
+                                "name": "hi",
+                                "type": "integer",
+                                "value": 1
+                            }
+                        ]
+                    },
+                    "runAfter": {},
+                    "type": "InitializeVariable"
+                }
+            },
+            "contentVersion": "1.0.0.0",
+            "outputs": {},
+            "parameters": {
+                "$connections": {
+                    "defaultValue": {},
+                    "type": "Object"
+                },
+                "NumberOfRuns": {
+                    "defaultValue": 5,
+                    "type": "Int"
+                }
+            },
+            "triggers": {
+                "Recurrence": {
+                    "evaluatedRecurrence": {
+                        "frequency": "Hour",
+                        "interval": 3
+                    },
+                    "recurrence": {
+                        "frequency": "Hour",
+                        "interval": 3
+                    },
+                    "type": "Recurrence"
+                }
+            }
+        }
+    }
+}

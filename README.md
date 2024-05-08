@@ -1,23 +1,7 @@
 <!-- BEGIN_TF_DOCS -->
-# terraform-azurerm-avm-template
+# terraform-azurerm-avm-tlogic\_workflow
 
-This is a template repo for Terraform Azure Verified Modules.
-
-Things to do:
-
-1. Set up a GitHub repo environment called `test`.
-1. Configure environment protection rule to ensure that approval is required before deploying to this environment.
-1. Create a user-assigned managed identity in your test subscription.
-1. Create a role assignment for the managed identity on your test subscription, use the minimum required role.
-1. Configure federated identity credentials on the user assigned managed identity. Use the GitHub environment.
-1. Search and update TODOs within the code and remove the TODO comments once complete.
-
-> [!IMPORTANT]
-> As the overall AVM framework is not GA (generally available) yet - the CI framework and test automation is not fully functional and implemented across all supported languages yet - breaking changes are expected, and additional customer feedback is yet to be gathered and incorporated. Hence, modules **MUST NOT** be published at version `1.0.0` or higher at this time.
->
-> All module **MUST** be published as a pre-release version (e.g., `0.1.0`, `0.1.1`, `0.2.0`, etc.) until the AVM framework becomes GA.
->
-> However, it is important to note that this **DOES NOT** mean that the modules cannot be consumed and utilized. They **CAN** be leveraged in all types of environments (dev, test, prod etc.). Consumers can treat them just like any other IaC module and raise issues or feature requests against them as they learn from the usage of the module. Consumers should also read the release notes for each version, if considering updating to a more recent version of a module to see if there are any considerations or breaking changes etc.
+This module creates a Logic App workflow with the Consumption SKU.  
 
 <!-- markdownlint-disable MD033 -->
 ## Requirements
@@ -25,6 +9,8 @@ Things to do:
 The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.5)
+
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 1.13)
 
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 3.71)
 
@@ -34,6 +20,8 @@ The following requirements are needed by this module:
 
 The following providers are used by this module:
 
+- <a name="provider_azapi"></a> [azapi](#provider\_azapi) (~> 1.13)
+
 - <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (~> 3.71)
 
 - <a name="provider_random"></a> [random](#provider\_random) (~> 3.5)
@@ -42,11 +30,8 @@ The following providers are used by this module:
 
 The following resources are used by this module:
 
+- [azapi_resource.this](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
 - [azurerm_management_lock.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/management_lock) (resource)
-- [azurerm_private_endpoint.this_managed_dns_zone_groups](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_endpoint) (resource)
-- [azurerm_private_endpoint.this_unmanaged_dns_zone_groups](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_endpoint) (resource)
-- [azurerm_private_endpoint_application_security_group_association.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_endpoint_application_security_group_association) (resource)
-- [azurerm_resource_group.TODO](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
 - [azurerm_resource_group_template_deployment.telemetry](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group_template_deployment) (resource)
 - [azurerm_role_assignment.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) (resource)
 - [random_id.telem](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) (resource)
@@ -68,6 +53,12 @@ Description: The name of the this resource.
 
 Type: `string`
 
+### <a name="input_resource_group_id"></a> [resource\_group\_id](#input\_resource\_group\_id)
+
+Description: The resource group ID where the resources will be deployed.
+
+Type: `string`
+
 ### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
 
 Description: The resource group where the resources will be deployed.
@@ -77,6 +68,14 @@ Type: `string`
 ## Optional Inputs
 
 The following input variables are optional (have default values):
+
+### <a name="input_access_control"></a> [access\_control](#input\_access\_control)
+
+Description: Optional. The access control configuration for the workflow.
+
+Type: `map`
+
+Default: `{}`
 
 ### <a name="input_customer_managed_key"></a> [customer\_managed\_key](#input\_customer\_managed\_key)
 
@@ -146,6 +145,30 @@ Type: `bool`
 
 Default: `true`
 
+### <a name="input_endpoints_configuration"></a> [endpoints\_configuration](#input\_endpoints\_configuration)
+
+Description: Optional. The endpoints configuration:  Access endpoint and outgoing IP addresses for the connector and workflow.
+
+Type: `map`
+
+Default: `{}`
+
+### <a name="input_integration_account_id"></a> [integration\_account\_id](#input\_integration\_account\_id)
+
+Description: Optional. The Integration Account ID.
+
+Type: `string`
+
+Default: `""`
+
+### <a name="input_integration_service_environment_id"></a> [integration\_service\_environment\_id](#input\_integration\_service\_environment\_id)
+
+Description: Optional. The integration service environment id.
+
+Type: `string`
+
+Default: `""`
+
 ### <a name="input_lock"></a> [lock](#input\_lock)
 
 Description: Controls the Resource Lock configuration for this resource. The following properties can be specified:
@@ -163,6 +186,27 @@ object({
 ```
 
 Default: `null`
+
+### <a name="input_logic_app_definition"></a> [logic\_app\_definition](#input\_logic\_app\_definition)
+
+Description:   The definition of the Logic App workflow.  This parameter's structure is defined by  
+  the Logic App workflow schema, and hence a type constraint is not defined here.  The Default value  
+  contains the necessary minimum contents - to define a blank Logic App workflow.
+
+Type: `map`
+
+Default:
+
+```json
+{
+  "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+  "actions": {},
+  "contentVersion": "1.0.0.0",
+  "outputs": {},
+  "parameters": {},
+  "triggers": {}
+}
+```
 
 ### <a name="input_managed_identities"></a> [managed\_identities](#input\_managed\_identities)
 
@@ -275,6 +319,14 @@ map(object({
 
 Default: `{}`
 
+### <a name="input_state"></a> [state](#input\_state)
+
+Description: Optional. The state. - NotSpecified, Completed, Enabled, Disabled, Deleted, Suspended.
+
+Type: `string`
+
+Default: `"Enabled"`
+
 ### <a name="input_tags"></a> [tags](#input\_tags)
 
 Description: (Optional) Tags of the resource.
@@ -286,10 +338,6 @@ Default: `null`
 ## Outputs
 
 The following outputs are exported:
-
-### <a name="output_private_endpoints"></a> [private\_endpoints](#output\_private\_endpoints)
-
-Description:   A map of the private endpoints created.
 
 ### <a name="output_resource"></a> [resource](#output\_resource)
 
