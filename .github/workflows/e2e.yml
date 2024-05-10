@@ -48,7 +48,6 @@ jobs:
           RETRY_COUNT=0
           until [ $RETRY_COUNT -ge $MAX_RETRIES ]
           do
-            echo "MSI ID is: " $MSI_ID
             az login --identity --username $MSI_ID > /dev/null && break
             RETRY_COUNT=$[$RETRY_COUNT+1]
             sleep 10
