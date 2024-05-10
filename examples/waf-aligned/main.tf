@@ -70,14 +70,6 @@ module "logicapp_workflow_waf" {
   # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
   # ...
   enable_telemetry = var.enable_telemetry # see variables.tf
-  role_assignments = {
-    logicapp_administrator = {
-
-      principal_id               = "8660129a-fe6a-4304-9f5c-5245c50b03cf"
-      role_definition_id_or_name = "Owner"
-
-    }
-  }
   name                = module.naming.logic_app_workflow.name_unique
   resource_group_id   = azurerm_resource_group.this.id
   resource_group_name = azurerm_resource_group.this.name
