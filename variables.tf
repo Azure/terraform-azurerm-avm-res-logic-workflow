@@ -20,11 +20,16 @@ variable "resource_group_name" {
   description = "The resource group where the resources will be deployed."
 }
 
-# #Access control block
+# Access control block. 
 # tflint-ignore: terraform_typed_variables
 variable "access_control" {
   default     = {}
-  description = "Optional. The access control configuration for the workflow."
+  description = <<DESCRIPTION
+   "Optional. The access control configuration for the workflow."
+    Refer https://learn.microsoft.com/en-us/azure/templates/microsoft.logic/workflows?pivots=deployment-language-terraform
+    for schema reference.  This variable is left untyped, so that adhoc openAuthenticationPolicies can be
+    specified. A basic example is available in the waf-aligned example.
+DESCRIPTION
 }
 
 # required AVM interfaces
@@ -109,7 +114,11 @@ DESCRIPTION
 # tflint-ignore: terraform_typed_variables
 variable "endpoints_configuration" {
   default     = {}
-  description = "Optional. The endpoints configuration:  Access endpoint and outgoing IP addresses for the connector and workflow."
+  description = <<DESCRIPTION
+  Optional. The endpoints configuration:  Access endpoint and outgoing IP addresses for the connector and workflow.
+  Refer https://learn.microsoft.com/en-us/azure/templates/microsoft.logic/workflows?pivots=deployment-language-terraform
+  for schema reference. This variable is untyped; refer waf-aligned example for usage guidance.
+DESCRIPTION
 }
 
 variable "integration_account_id" {
@@ -154,9 +163,11 @@ variable "logic_app_definition" {
     triggers       = {}
   }
   description = <<DESCRIPTION
-  The definition of the Logic App workflow.  This parameter's structure is defined by
-  the Logic App workflow schema, and hence a type constraint is not defined here.  The Default value
-  contains the necessary minimum contents - to define a blank Logic App workflow.
+  This variable contains the actual Logic App workflow definition. In practice, Logic app workflows 
+  are usually created using Azure Portal or VS Code extensions.   Pre-existing workflows can be exported
+  into their JSON representation, which is added as input to this deployment through this variable
+  It is to be noted that only the Logic app definition is included here;   For example, if a Logic App uses any API connections, 
+  that resource has to be provisioned separately.
 DESCRIPTION
 }
 
@@ -173,70 +184,6 @@ Controls the Managed Identity configuration on this resource. The following prop
 - `system_assigned` - (Optional) Specifies if the System Assigned Managed Identity should be enabled.
 - `user_assigned_resource_ids` - (Optional) Specifies a list of User Assigned Managed Identity resource IDs to be assigned to this resource.
 DESCRIPTION
-  nullable    = false
-}
-
-variable "private_endpoints" {
-  type = map(object({
-    name = optional(string, null)
-    role_assignments = optional(map(object({
-      role_definition_id_or_name             = string
-      principal_id                           = string
-      description                            = optional(string, null)
-      skip_service_principal_aad_check       = optional(bool, false)
-      condition                              = optional(string, null)
-      condition_version                      = optional(string, null)
-      delegated_managed_identity_resource_id = optional(string, null)
-    })), {})
-    lock = optional(object({
-      kind = string
-      name = optional(string, null)
-    }), null)
-    tags                                    = optional(map(string), null)
-    subnet_resource_id                      = string
-    private_dns_zone_group_name             = optional(string, "default")
-    private_dns_zone_resource_ids           = optional(set(string), [])
-    application_security_group_associations = optional(map(string), {})
-    private_service_connection_name         = optional(string, null)
-    network_interface_name                  = optional(string, null)
-    location                                = optional(string, null)
-    resource_group_name                     = optional(string, null)
-    ip_configurations = optional(map(object({
-      name               = string
-      private_ip_address = string
-    })), {})
-  }))
-  default     = {}
-  description = <<DESCRIPTION
-A map of private endpoints to create on this resource. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
-
-- `name` - (Optional) The name of the private endpoint. One will be generated if not set.
-- `role_assignments` - (Optional) A map of role assignments to create on the private endpoint. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time. See `var.role_assignments` for more information.
-- `lock` - (Optional) The lock level to apply to the private endpoint. Default is `None`. Possible values are `None`, `CanNotDelete`, and `ReadOnly`.
-- `tags` - (Optional) A mapping of tags to assign to the private endpoint.
-- `subnet_resource_id` - The resource ID of the subnet to deploy the private endpoint in.
-- `private_dns_zone_group_name` - (Optional) The name of the private DNS zone group. One will be generated if not set.
-- `private_dns_zone_resource_ids` - (Optional) A set of resource IDs of private DNS zones to associate with the private endpoint. If not set, no zone groups will be created and the private endpoint will not be associated with any private DNS zones. DNS records must be managed external to this module.
-- `application_security_group_resource_ids` - (Optional) A map of resource IDs of application security groups to associate with the private endpoint. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
-- `private_service_connection_name` - (Optional) The name of the private service connection. One will be generated if not set.
-- `network_interface_name` - (Optional) The name of the network interface. One will be generated if not set.
-- `location` - (Optional) The Azure location where the resources will be deployed. Defaults to the location of the resource group.
-- `resource_group_name` - (Optional) The resource group where the resources will be deployed. Defaults to the resource group of this resource.
-- `ip_configurations` - (Optional) A map of IP configurations to create on the private endpoint. If not specified the platform will create one. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
-  - `name` - The name of the IP configuration.
-  - `private_ip_address` - The private IP address of the IP configuration.
-DESCRIPTION
-  nullable    = false
-}
-
-# This variable is used to determine if the private_dns_zone_group block should be included,
-# or if it is to be managed externally, e.g. using Azure Policy.
-# https://github.com/Azure/terraform-azurerm-avm-res-keyvault-vault/issues/32
-# Alternatively you can use AzAPI, which does not have this issue.
-variable "private_endpoints_manage_dns_zone_group" {
-  type        = bool
-  default     = true
-  description = "Whether to manage private DNS zone groups with this module. If set to false, you must manage private DNS zone groups externally, e.g. using Azure Policy."
   nullable    = false
 }
 

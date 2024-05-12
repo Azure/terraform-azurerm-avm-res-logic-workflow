@@ -1,7 +1,7 @@
 <!-- BEGIN_TF_DOCS -->
 # WAF-Aligned example
 
-This deploys the module as aligned to WAF framework. This includes Diagnostics settings, Role assignments, tags etc. It also takes as a parameter the JSON representation of an existing Logic App workflow - this can be exported from Azure Portal.
+This deploys the module as aligned to WAF framework. This includes Diagnostics settings, Role assignments, tags etc. It also takes as a parameter the JSON representation of an existing Logic App workflow - this can be exported from an existing Logic App resource, authored via the Azure Portal or VS Code.
 
 ```hcl
 terraform {
@@ -75,15 +75,7 @@ module "logicapp_workflow_waf" {
   source = "../../"
   # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
   # ...
-  enable_telemetry = var.enable_telemetry # see variables.tf
-  role_assignments = {
-    logicapp_administrator = {
-
-      principal_id               = "8660129a-fe6a-4304-9f5c-5245c50b03cf"
-      role_definition_id_or_name = "Owner"
-
-    }
-  }
+  enable_telemetry    = var.enable_telemetry # see variables.tf
   name                = module.naming.logic_app_workflow.name_unique
   resource_group_id   = azurerm_resource_group.this.id
   resource_group_name = azurerm_resource_group.this.name
@@ -95,7 +87,12 @@ module "logicapp_workflow_waf" {
   tags = {
     environment = "production"
   }
-
+  role_assignments = {
+    logic_app_contributor = {
+      role_definition_id_or_name = "Logic App Contributor"
+      principal_id               = azurerm_user_assigned_identity.example_identity.principal_id
+    }
+  }
   logic_app_definition = jsondecode(file("./logic_app_definition.json"))["properties"]["definition"]
   access_control = {
     actions = {

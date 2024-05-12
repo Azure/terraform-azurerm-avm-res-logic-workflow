@@ -69,7 +69,7 @@ module "logicapp_workflow_waf" {
   source = "../../"
   # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
   # ...
-  enable_telemetry = var.enable_telemetry # see variables.tf
+  enable_telemetry    = var.enable_telemetry # see variables.tf
   name                = module.naming.logic_app_workflow.name_unique
   resource_group_id   = azurerm_resource_group.this.id
   resource_group_name = azurerm_resource_group.this.name
@@ -81,7 +81,12 @@ module "logicapp_workflow_waf" {
   tags = {
     environment = "production"
   }
-
+  role_assignments = {
+    logic_app_contributor = {
+      role_definition_id_or_name = "Logic App Contributor"
+      principal_id               = azurerm_user_assigned_identity.example_identity.principal_id
+    }
+  }
   logic_app_definition = jsondecode(file("./logic_app_definition.json"))["properties"]["definition"]
   access_control = {
     actions = {
