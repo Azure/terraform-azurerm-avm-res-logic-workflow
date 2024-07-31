@@ -4,3 +4,7 @@ output "resource" {
   description = "This is the full output for the resource."
   value       = azapi_resource.this
 }
+output "resource_id" {
+  description = "Resource ID of logic app"
+  value       = azapi_resource.this.id
+}
