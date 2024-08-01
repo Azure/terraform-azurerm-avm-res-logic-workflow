@@ -282,6 +282,10 @@ The following outputs are exported:
 
 Description: This is the full output for the resource.
 
+### <a name="output_resource_id"></a> [resource\_id](#output\_resource\_id)
+
+Description: Resource ID of logic app
+
 ## Modules
 
 No modules.
