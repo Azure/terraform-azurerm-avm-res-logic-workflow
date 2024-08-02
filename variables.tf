@@ -15,6 +15,7 @@ variable "resource_group_id" {
 }
 
 # This is required for most resource modules
+# tflint-ignore: terraform_unused_declarations
 variable "resource_group_name" {
   type        = string
   description = "The resource group where the resources will be deployed."
@@ -196,6 +197,7 @@ variable "role_assignments" {
     condition                              = optional(string, null)
     condition_version                      = optional(string, null)
     delegated_managed_identity_resource_id = optional(string, null)
+    principal_type                         = optional(string, null)
   }))
   default     = {}
   description = <<DESCRIPTION
