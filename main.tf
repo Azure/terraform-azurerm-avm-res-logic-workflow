@@ -1,6 +1,6 @@
 resource "azapi_resource" "this" {
   type = "Microsoft.Logic/workflows@2019-05-01"
-  body = jsonencode({
+  body = {
     properties = {
       parameters = {}
       state      = var.state
@@ -11,7 +11,7 @@ resource "azapi_resource" "this" {
       integrationAccount            = var.integration_account_id != "" ? { id = var.integration_account_id } : null
       integrationServiceEnvironment = var.integration_service_environment_id != "" ? { id = var.integration_service_environment_id } : null
     }
-  })
+  }
   location  = var.location
   name      = var.name
   parent_id = var.resource_group_id
