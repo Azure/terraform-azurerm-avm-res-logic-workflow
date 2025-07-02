@@ -1,5 +1,8 @@
 resource "azapi_resource" "this" {
-  type = "Microsoft.Logic/workflows@2019-05-01"
+  location  = var.location
+  name      = var.name
+  parent_id = var.resource_group_id
+  type      = "Microsoft.Logic/workflows@2019-05-01"
   body = jsonencode({
     properties = {
       parameters = {}
@@ -12,10 +15,7 @@ resource "azapi_resource" "this" {
       integrationServiceEnvironment = var.integration_service_environment_id != "" ? { id = var.integration_service_environment_id } : null
     }
   })
-  location  = var.location
-  name      = var.name
-  parent_id = var.resource_group_id
-  tags      = var.tags
+  tags = var.tags
 
   dynamic "identity" {
     for_each = (var.managed_identities.system_assigned || length(var.managed_identities.user_assigned_resource_ids) > 0) ? { this = var.managed_identities } : {}
