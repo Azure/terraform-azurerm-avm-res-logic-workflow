@@ -1,5 +1,6 @@
 terraform {
   required_version = "~> 1.5"
+
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
@@ -49,12 +50,12 @@ resource "azurerm_resource_group" "this" {
 # with a data source.
 module "logicapp_workflow" {
   source = "../../"
+
+  location = azurerm_resource_group.this.location
   # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
   # ...
   name                = module.naming.logic_app_workflow.name_unique
-  resource_group_name = azurerm_resource_group.this.name
   resource_group_id   = azurerm_resource_group.this.id
-  location            = azurerm_resource_group.this.location
-
-  enable_telemetry = var.enable_telemetry # see variables.tf
+  resource_group_name = azurerm_resource_group.this.name
+  enable_telemetry    = var.enable_telemetry # see variables.tf
 }

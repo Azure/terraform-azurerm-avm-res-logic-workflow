@@ -1,5 +1,6 @@
 terraform {
   required_version = ">= 1.3.0"
+
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
@@ -67,27 +68,11 @@ resource "azurerm_log_analytics_workspace" "this" {
 # with a data source.
 module "logicapp_workflow_waf" {
   source = "../../"
-  # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
-  # ...
-  enable_telemetry    = var.enable_telemetry # see variables.tf
+
+  location            = azurerm_resource_group.this.location
   name                = module.naming.logic_app_workflow.name_unique
   resource_group_id   = azurerm_resource_group.this.id
   resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
-  managed_identities = {
-    system_assigned            = false
-    user_assigned_resource_ids = [azurerm_user_assigned_identity.example_identity.id]
-  }
-  tags = {
-    environment = "production"
-  }
-  role_assignments = {
-    logic_app_contributor = {
-      role_definition_id_or_name = "Logic App Contributor"
-      principal_id               = azurerm_user_assigned_identity.example_identity.principal_id
-    }
-  }
-  logic_app_definition = jsondecode(file("./logic_app_definition.json"))["properties"]["definition"]
   access_control = {
     actions = {
       allowedCallerIpAddresses = [
@@ -118,11 +103,28 @@ module "logicapp_workflow_waf" {
       ]
     }
   }
-  state = "Enabled"
   diagnostic_settings = {
     LogicAppDiagnostics = {
       name                  = "LogicAppDiagnostics"
       workspace_resource_id = azurerm_log_analytics_workspace.this.id
     }
+  }
+  # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
+  # ...
+  enable_telemetry     = var.enable_telemetry # see variables.tf
+  logic_app_definition = jsondecode(file("./logic_app_definition.json"))["properties"]["definition"]
+  managed_identities = {
+    system_assigned            = false
+    user_assigned_resource_ids = [azurerm_user_assigned_identity.example_identity.id]
+  }
+  role_assignments = {
+    logic_app_contributor = {
+      role_definition_id_or_name = "Logic App Contributor"
+      principal_id               = azurerm_user_assigned_identity.example_identity.principal_id
+    }
+  }
+  state = "Enabled"
+  tags = {
+    environment = "production"
   }
 }
