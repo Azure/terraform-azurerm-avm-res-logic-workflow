@@ -6,6 +6,7 @@ This deploys the module as with a large number of parameters.  It also takes as 
 ```hcl
 terraform {
   required_version = ">= 1.3.0"
+
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
@@ -65,22 +66,11 @@ resource "azurerm_resource_group" "this" {
 # with a data source.
 module "logiapp_workflow_max" {
   source = "../../"
-  # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
-  # ...
-  enable_telemetry    = var.enable_telemetry # see variables.tf
+
+  location            = azurerm_resource_group.this.location
   name                = module.naming.logic_app_workflow.name_unique
   resource_group_id   = azurerm_resource_group.this.id
   resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
-  managed_identities = {
-    system_assigned            = false
-    user_assigned_resource_ids = [azurerm_user_assigned_identity.example_identity.id]
-  }
-  tags = {
-    environment = "production"
-  }
-
-  logic_app_definition = jsondecode(file("./logic_app_definition.json"))["properties"]["definition"]
   access_control = {
     actions = {
       allowedCallerIpAddresses = [
@@ -111,7 +101,18 @@ module "logiapp_workflow_max" {
       ]
     }
   }
+  # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
+  # ...
+  enable_telemetry     = var.enable_telemetry # see variables.tf
+  logic_app_definition = jsondecode(file("./logic_app_definition.json"))["properties"]["definition"]
+  managed_identities = {
+    system_assigned            = false
+    user_assigned_resource_ids = [azurerm_user_assigned_identity.example_identity.id]
+  }
   state = "Enabled"
+  tags = {
+    environment = "production"
+  }
 }
 ```
 
