@@ -21,7 +21,7 @@ variable "resource_group_name" {
   description = "The resource group where the resources will be deployed."
 }
 
-# Access control block. 
+# Access control block.
 # tflint-ignore: terraform_typed_variables
 variable "access_control" {
   default     = {}
@@ -53,7 +53,7 @@ A map describing customer-managed keys to associate with the resource. This incl
 - `key_version` - (Optional) The version of the key. If not specified, the latest version is used.
 - `user_assigned_identity` - (Optional) An object representing a user-assigned identity with the following properties:
   - `resource_id` - The resource ID of the user-assigned identity.
-DESCRIPTION  
+DESCRIPTION
 }
 
 variable "diagnostic_settings" {
@@ -83,7 +83,7 @@ A map of diagnostic settings to create on the Key Vault. The map key is delibera
 - `event_hub_authorization_rule_resource_id` - (Optional) The resource ID of the event hub authorization rule to send logs and metrics to.
 - `event_hub_name` - (Optional) The name of the event hub. If none is specified, the default event hub will be selected.
 - `marketplace_partner_resource_id` - (Optional) The full ARM resource ID of the Marketplace resource to which you would like to send Diagnostic LogsLogs.
-DESCRIPTION  
+DESCRIPTION
   nullable    = false
 
   validation {
@@ -164,10 +164,10 @@ variable "logic_app_definition" {
     triggers       = {}
   }
   description = <<DESCRIPTION
-  This variable contains the actual Logic App workflow definition. In practice, Logic app workflows 
+  This variable contains the actual Logic App workflow definition. In practice, Logic app workflows
   are usually created using Azure Portal or VS Code extensions.   Pre-existing workflows can be exported
   into their JSON representation, which is added as input to this deployment through this variable
-  It is to be noted that only the Logic app definition is included here;   For example, if a Logic App uses any API connections, 
+  It is to be noted that only the Logic app definition is included here;   For example, if a Logic App uses any API connections,
   that resource has to be provisioned separately.
 DESCRIPTION
 }
@@ -231,4 +231,11 @@ variable "tags" {
   type        = map(string)
   default     = null
   description = "(Optional) Tags of the resource."
+}
+
+# tflint-ignore: terraform_typed_variables
+variable "workflow_parameters" {
+  type        = any
+  default     = {}
+  description = "Optional. A map of parameters to be passed to the workflow definition. This is useful for parameterizing the workflow definition."
 }
