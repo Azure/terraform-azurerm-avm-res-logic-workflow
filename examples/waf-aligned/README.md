@@ -133,7 +133,7 @@ module "logicapp_workflow_waf" {
   tags = {
     environment = "production"
   }
-  workflowParameters = {
+  workflow_parameters = {
     "WebsiteURL" = {
       type = "String"
       metadata = {

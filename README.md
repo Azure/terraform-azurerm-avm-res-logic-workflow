@@ -274,7 +274,7 @@ Type: `map(string)`
 
 Default: `null`
 
-### <a name="input_workflowParameters"></a> [workflowParameters](#input\_workflowParameters)
+### <a name="input_workflow_parameters"></a> [workflow\_parameters](#input\_workflow\_parameters)
 
 Description: Optional. A map of parameters to be passed to the workflow definition. This is useful for parameterizing the workflow definition.
 
