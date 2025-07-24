@@ -108,7 +108,7 @@ module "logiapp_workflow_max" {
   tags = {
     environment = "production"
   }
-  workflowParameters = {
+  workflow_parameters = {
     "WebsiteURL" = {
       type = "String"
       metadata = {

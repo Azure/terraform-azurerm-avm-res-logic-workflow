@@ -234,7 +234,7 @@ variable "tags" {
 }
 
 # tflint-ignore: terraform_typed_variables
-variable "workflowParameters" {
+variable "workflow_parameters" {
   type        = any
   default     = {}
   description = "Optional. A map of parameters to be passed to the workflow definition. This is useful for parameterizing the workflow definition."

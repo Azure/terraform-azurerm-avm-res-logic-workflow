@@ -5,7 +5,7 @@ resource "azapi_resource" "this" {
   type      = "Microsoft.Logic/workflows@2019-05-01"
   body = {
     properties = {
-      parameters = var.workflowParameters
+      parameters = var.workflow_parameters
       state      = var.state
       definition = var.logic_app_definition
       #definition                    = [jsondecode(var.logic_app_definition), jsondecode(local.default_logicapp_json)][var.logic_app_definition == "" ? 0 : 1]
