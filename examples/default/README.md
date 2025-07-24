@@ -21,6 +21,7 @@ terraform {
 
 provider "azurerm" {
   features {}
+  subscription_id = "46427a45-8a0a-4c2e-b5ba-91ba905139f6"
 }
 
 
@@ -64,6 +65,14 @@ module "logicapp_workflow" {
   resource_group_id   = azurerm_resource_group.this.id
   resource_group_name = azurerm_resource_group.this.name
   enable_telemetry    = var.enable_telemetry # see variables.tf
+  workflowParameters = {
+    "websiteUrl" = {
+      type        = "string"
+      metadata    = "websiteURL"
+      description = "The URL of the website to monitor."
+      value       = "https://example.com"
+    }
+  }
 }
 ```
 

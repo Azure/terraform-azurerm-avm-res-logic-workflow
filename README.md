@@ -189,10 +189,10 @@ Default: `null`
 
 ### <a name="input_logic_app_definition"></a> [logic\_app\_definition](#input\_logic\_app\_definition)
 
-Description:   This variable contains the actual Logic App workflow definition. In practice, Logic app workflows   
+Description:   This variable contains the actual Logic App workflow definition. In practice, Logic app workflows  
   are usually created using Azure Portal or VS Code extensions.   Pre-existing workflows can be exported  
   into their JSON representation, which is added as input to this deployment through this variable  
-  It is to be noted that only the Logic app definition is included here;   For example, if a Logic App uses any API connections,   
+  It is to be noted that only the Logic app definition is included here;   For example, if a Logic App uses any API connections,  
   that resource has to be provisioned separately.
 
 Type: `map`
@@ -273,6 +273,14 @@ Description: (Optional) Tags of the resource.
 Type: `map(string)`
 
 Default: `null`
+
+### <a name="input_workflowParameters"></a> [workflowParameters](#input\_workflowParameters)
+
+Description: Optional. A map of parameters to be passed to the workflow definition. This is useful for parameterizing the workflow definition.
+
+Type: `any`
+
+Default: `{}`
 
 ## Outputs
 

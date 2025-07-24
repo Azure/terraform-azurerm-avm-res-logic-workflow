@@ -25,6 +25,7 @@ provider "azurerm" {
       prevent_deletion_if_contains_resources = false
     }
   }
+  subscription_id = "46427a45-8a0a-4c2e-b5ba-91ba905139f6"
 }
 
 
@@ -131,6 +132,28 @@ module "logicapp_workflow_waf" {
   state = "Enabled"
   tags = {
     environment = "production"
+  }
+  workflowParameters = {
+    "WebsiteURL" = {
+      type = "String"
+      metadata = {
+        description = "URL of website to monitor"
+      }
+      description = "The URL of the website to monitor."
+      value       = "https://www.google.com"
+    },
+    "Products" = {
+      type = "Array"
+      metadata = {
+        description = "Products to include"
+      }
+      description = "The products to include."
+      value = [
+        "Azure",
+        "Microsoft 365",
+        "Dynamics 365"
+      ]
+    }
   }
 }
 ```
