@@ -3,9 +3,9 @@ resource "azapi_resource" "this" {
   name      = var.name
   parent_id = var.resource_group_id
   type      = "Microsoft.Logic/workflows@2019-05-01"
-  body = jsonencode({
+  body = {
     properties = {
-      parameters = {}
+      parameters = var.workflow_parameters
       state      = var.state
       definition = var.logic_app_definition
       #definition                    = [jsondecode(var.logic_app_definition), jsondecode(local.default_logicapp_json)][var.logic_app_definition == "" ? 0 : 1]
@@ -14,7 +14,7 @@ resource "azapi_resource" "this" {
       integrationAccount            = var.integration_account_id != "" ? { id = var.integration_account_id } : null
       integrationServiceEnvironment = var.integration_service_environment_id != "" ? { id = var.integration_service_environment_id } : null
     }
-  })
+  }
   tags = var.tags
 
   dynamic "identity" {
@@ -78,11 +78,11 @@ resource "azurerm_monitor_diagnostic_setting" "this" {
       category_group = enabled_log.value
     }
   }
-  dynamic "metric" {
+  dynamic "enabled_metric" {
     for_each = each.value.metric_categories
 
     content {
-      category = metric.value
+      category = enabled_metric.value
     }
   }
 }
