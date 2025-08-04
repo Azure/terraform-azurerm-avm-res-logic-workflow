@@ -78,6 +78,14 @@
                 "NumberOfRuns": {
                     "defaultValue": 5,
                     "type": "Int"
+                },
+                "WebsiteURL": {
+                    "defaultValue": "https://www.microsoft.com",
+                    "type": "String"
+                },
+                "Products": {
+                    "type": "Array",
+                    "defaultValue" : []
                 }
             },
             "triggers": {

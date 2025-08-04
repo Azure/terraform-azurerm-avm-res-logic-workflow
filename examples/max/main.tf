@@ -1,9 +1,10 @@
 terraform {
-  required_version = ">= 1.3.0"
+  required_version = ">= 1.9, < 2.0"
+
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = ">= 3.7.0, < 4.0.0"
+      version = "~> 4.0, >= 4.8.0, >= 4.21.1, < 5.0.0"
     }
     random = {
       source  = "hashicorp/random"
@@ -18,6 +19,7 @@ provider "azurerm" {
       prevent_deletion_if_contains_resources = false
     }
   }
+  #subscription_id = "xxx-xxxx-xxxx-xxxx-xxxxxxxxxxx" # Replace with your Azure subscription ID
 }
 
 
@@ -25,7 +27,7 @@ provider "azurerm" {
 # This allows us to randomize the region for the resource group.
 module "regions" {
   source  = "Azure/regions/azurerm"
-  version = ">= 0.3.0"
+  version = "0.8.2"
 }
 
 # This allows us to randomize the region for the resource group.
@@ -38,7 +40,7 @@ resource "random_integer" "region_index" {
 # This ensures we have unique CAF compliant names for our resources.
 module "naming" {
   source  = "Azure/naming/azurerm"
-  version = ">= 0.3.0"
+  version = "0.4.2"
 }
 
 resource "azurerm_user_assigned_identity" "example_identity" {
@@ -59,22 +61,11 @@ resource "azurerm_resource_group" "this" {
 # with a data source.
 module "logiapp_workflow_max" {
   source = "../../"
-  # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
-  # ...
-  enable_telemetry    = var.enable_telemetry # see variables.tf
+
+  location            = azurerm_resource_group.this.location
   name                = module.naming.logic_app_workflow.name_unique
   resource_group_id   = azurerm_resource_group.this.id
   resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
-  managed_identities = {
-    system_assigned            = false
-    user_assigned_resource_ids = [azurerm_user_assigned_identity.example_identity.id]
-  }
-  tags = {
-    environment = "production"
-  }
-
-  logic_app_definition = jsondecode(file("./logic_app_definition.json"))["properties"]["definition"]
   access_control = {
     actions = {
       allowedCallerIpAddresses = [
@@ -105,5 +96,38 @@ module "logiapp_workflow_max" {
       ]
     }
   }
+  # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
+  # ...
+  enable_telemetry     = var.enable_telemetry # see variables.tf
+  logic_app_definition = jsondecode(file("./logic_app_definition.json"))["properties"]["definition"]
+  managed_identities = {
+    system_assigned            = false
+    user_assigned_resource_ids = [azurerm_user_assigned_identity.example_identity.id]
+  }
   state = "Enabled"
+  tags = {
+    environment = "production"
+  }
+  workflow_parameters = {
+    "WebsiteURL" = {
+      type = "String"
+      metadata = {
+        description = "URL of website to monitor"
+      }
+      description = "The URL of the website to monitor."
+      value       = "https://www.google.com"
+    },
+    "Products" = {
+      type = "Array"
+      metadata = {
+        description = "Products to include"
+      }
+      description = "The products to include."
+      value = [
+        "Azure",
+        "Microsoft 365",
+        "Dynamics 365"
+      ]
+    }
+  }
 }
