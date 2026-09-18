@@ -65,7 +65,7 @@ module "logicapp_workflow" {
   name                = module.naming.logic_app_workflow.name_unique
   resource_group_id   = azurerm_resource_group.this.id
   resource_group_name = azurerm_resource_group.this.name
-  enable_telemetry    = false # see variables.tf
+  enable_telemetry    = var.enable_telemetry # see variables.tf
 }
 ```
 
@@ -104,7 +104,7 @@ If it is set to false, then no telemetry will be collected.
 
 Type: `bool`
 
-Default: `true`
+Default: `false`
 
 ## Outputs
 
