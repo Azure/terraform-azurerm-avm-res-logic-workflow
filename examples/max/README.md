@@ -105,7 +105,7 @@ module "logiapp_workflow_max" {
   }
   # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
   # ...
-  enable_telemetry     = false # see variables.tf
+  enable_telemetry     = var.enable_telemetry # see variables.tf
   logic_app_definition = jsondecode(file("./logic_app_definition.json"))["properties"]["definition"]
   managed_identities = {
     system_assigned            = false
@@ -176,7 +176,7 @@ If it is set to false, then no telemetry will be collected.
 
 Type: `bool`
 
-Default: `true`
+Default: `false`
 
 ## Outputs
 
